@@ -65,3 +65,16 @@ def recommend(query):
 
     # Nothing found
     return []
+import requests
+
+OMDB_API_KEY = "8df3a7d2"  # 🔁 Replace with your actual key
+
+def fetch_poster(title):
+    url = f"http://www.omdbapi.com/?t={title}&apikey={OMDB_API_KEY}"
+    response = requests.get(url)
+    data = response.json()
+    
+    if data.get('Response') == 'True':
+        return data.get('Poster')
+    else:
+        return "https://via.placeholder.com/150?text=No+Image"
