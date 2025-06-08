@@ -70,11 +70,13 @@ import requests
 OMDB_API_KEY = "8df3a7d2"  # 🔁 Replace with your actual key
 
 def fetch_poster(title):
+    title = title.split(":")[0].strip()
+    title = title.replace("&", "and")
     url = f"http://www.omdbapi.com/?t={title}&apikey={OMDB_API_KEY}"
     response = requests.get(url)
     data = response.json()
-    
-    if data.get('Response') == 'True':
+
+    if data.get('Response') == 'True'and data.get("Poster") != "N/A"::
         return data.get('Poster')
     else:
-        return "https://via.placeholder.com/150?text=No+Image"
+        return "https://via.placeholder.com/160x240.png?text=No+Image"
