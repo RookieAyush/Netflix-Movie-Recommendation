@@ -61,7 +61,7 @@ def recommend(query):
     genre_matches = df[df['listed_in'].str.lower().str.contains(query)]
     
     if not genre_matches.empty:
-        return genre_matches[['title', 'listed_in', 'description']].sample(n=6, random_state=42)
+        return genre_matches[['title', 'listed_in', 'description']].sample(n=15, random_state=42)
 
     # Nothing found
     return []
