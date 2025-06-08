@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1tzjYXpRzaOGCcPix5WNEb_N4wQ1i2Jof
 """
 
-import pandas as pd
+''' import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
 
@@ -29,4 +29,39 @@ def recommend(title):
         return []
     idx = matches.index[0]
     distances, indices = nn_model.kneighbors(tfidf_matrix[idx], n_neighbors=6)
-    return df.iloc[indices[0][1:]][['title', 'listed_in', 'description']]
+    return df.iloc[indices[0][1:]][['title', 'listed_in', 'description']]'''
+
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.neighbors import NearestNeighbors
+
+df = pd.read_csv('netflix_titles.csv')
+df['description'] = df['description'].fillna('')
+df['listed_in'] = df['listed_in'].fillna('')
+df['text'] = df['description'] + ' ' + df['listed_in']
+
+tfidf = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf.fit_transform(df['text'])
+
+nn_model = NearestNeighbors(n_neighbors=6, metric='cosine')
+nn_model.fit(tfidf_matrix)
+
+def recommend(query):
+    query = query.lower()
+    
+    # Try exact title match
+    matches = df[df['title'].str.lower() == query]
+    
+    if not matches.empty:
+        idx = matches.index[0]
+        distances, indices = nn_model.kneighbors(tfidf_matrix[idx], n_neighbors=6)
+        return df.iloc[indices[0][1:]][['title', 'listed_in', 'description']]
+    
+    # If not a title, treat as a genre/keyword query
+    genre_matches = df[df['listed_in'].str.lower().str.contains(query)]
+    
+    if not genre_matches.empty:
+        return genre_matches[['title', 'listed_in', 'description']].sample(n=6, random_state=42)
+
+    # Nothing found
+    return []
