@@ -76,7 +76,7 @@ def fetch_poster(title):
     response = requests.get(url)
     data = response.json()
 
-    if data.get('Response') == 'True'and data.get("Poster") != "N/A":
+    if data.get('Response') == 'True'and data.get("Poster") != "N/A"::
         return data.get('Poster')
     else:
         return "https://via.placeholder.com/160x240.png?text=No+Image"
